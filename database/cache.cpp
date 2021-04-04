@@ -5,6 +5,7 @@
 #include <ignite/thin/ignite_client.h>
 #include <ignite/thin/ignite_client_configuration.h>
 #include <ignite/thin/cache/cache_peek_mode.h>
+
 #include <exception>
 
 static ignite::thin::IgniteClient _client;
