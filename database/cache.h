@@ -14,6 +14,9 @@ namespace database
             static Cache get();
             void put(long id, const std::string& val);
             bool get(long id, std::string& val);
+            size_t size();
+            void remove(long id);
+            void remove_all();
     };
 }
 

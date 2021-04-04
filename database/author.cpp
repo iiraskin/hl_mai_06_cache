@@ -150,6 +150,9 @@ namespace database
         std::cout << "done: " << count << std::endl;
     }
 
+    size_t Author::size_of_cache(){
+        return database::Cache::get().size();
+    }
     void Author::save_to_cache()
     {
         std::stringstream ss;

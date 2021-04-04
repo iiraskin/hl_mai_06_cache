@@ -107,25 +107,35 @@ public:
         response.setContentType("application/json");
         std::ostream &ostr = response.send();
 
-        
         if (form.has("id"))
         {
             long id = atol(form.get("id").c_str());
+            bool no_cache = false;
 
+            if (form.has("no_cache"))
+                no_cache = true;
             // read from cache
-            try{
-                database::Author result = database::Author::read_from_cache_by_id(id);
-                Poco::JSON::Stringifier::stringify(result.toJSON(), ostr);
-                return;
-            }catch(...)
+            // Шаблон «сквозное чтение»
+            // если записи нет в кеше - ситаем из БД
+            if (!no_cache)
             {
-
+                try
+                {
+                    database::Author result = database::Author::read_from_cache_by_id(id);
+                    Poco::JSON::Stringifier::stringify(result.toJSON(), ostr);
+                    return;
+                }
+                catch (...)
+                {
+                }
             }
-            std::cout << "cache missed for id:" << id << std::endl;
+            //std::cout << "cache missed for id:" << id << std::endl;
             try
             {
                 database::Author result = database::Author::read_by_id(id);
-                result.save_to_cache();
+                if (!no_cache)
+                    result.save_to_cache();
+                //std::cout << "cache size:" << database::Author::size_of_cache() << std::endl;
                 Poco::JSON::Stringifier::stringify(result.toJSON(), ostr);
                 return;
             }
@@ -139,9 +149,9 @@ public:
         {
             try
             {
-                std::string  fn = form.get("first_name");
-                std::string  ln = form.get("last_name");
-                auto results = database::Author::search(fn,ln);
+                std::string fn = form.get("first_name");
+                std::string ln = form.get("last_name");
+                auto results = database::Author::search(fn, ln);
                 Poco::JSON::Array arr;
                 for (auto s : results)
                     arr.add(s.toJSON());
@@ -196,7 +206,10 @@ public:
                             {
                                 try
                                 {
+                                    // Шаблон «сквозная-запись»
+                                    // пишем и в БД и в кеш
                                     author.save_to_mysql();
+                                    author.save_to_cache();
                                     ostr << "{ \"result\": true }";
                                     return;
                                 }

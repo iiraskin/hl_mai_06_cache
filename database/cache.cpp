@@ -4,6 +4,7 @@
 
 #include <ignite/thin/ignite_client.h>
 #include <ignite/thin/ignite_client_configuration.h>
+#include <ignite/thin/cache/cache_peek_mode.h>
 #include <exception>
 
 static ignite::thin::IgniteClient _client;
@@ -15,6 +16,7 @@ namespace database
     {
         ignite::thin::IgniteClientConfiguration cfg;
         cfg.SetEndPoints(Config::get().get_cache_servers());
+        cfg.SetPartitionAwareness(true);
         try
         {
             _client = ignite::thin::IgniteClient::Start(cfg);
@@ -35,7 +37,20 @@ namespace database
 
     void Cache::put(long id, const std::string& val){
         _cache.Put(id,val);
+        _cache.RefreshAffinityMapping();
     } 
+
+    void Cache::remove(long id){
+        _cache.Remove(id);
+    }
+
+    size_t Cache::size(){
+        return _cache.GetSize(ignite::thin::cache::CachePeekMode::ALL);
+    }
+
+    void Cache::remove_all(){
+        _cache.RemoveAll();;
+    }
 
     bool Cache::get(long id, std::string& val){
         try{
