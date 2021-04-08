@@ -19,7 +19,7 @@ namespace database
 
             static Author fromJSON(const std::string & str);
 
-            long             get_id() const;
+            long               get_id() const;
             const std::string &get_first_name() const;
             const std::string &get_last_name() const;
             const std::string &get_email() const;

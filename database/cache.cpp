@@ -37,7 +37,6 @@ namespace database
 
     void Cache::put(long id, const std::string& val){
         _cache.Put(id,val);
-        _cache.RefreshAffinityMapping();
     } 
 
     void Cache::remove(long id){

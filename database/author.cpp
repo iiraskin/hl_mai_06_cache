@@ -101,7 +101,7 @@ namespace database
 
             if (!select.done())
             {
-                select.execute();
+                //select.execute();
             }
 
             return a;
@@ -181,7 +181,7 @@ namespace database
 
             while (!select.done())
             {
-                select.execute();
+                //select.execute();
                 result.push_back(a);
             }
             return result;
@@ -222,7 +222,7 @@ namespace database
 
             while (!select.done())
             {
-                select.execute();
+               // select.execute();
                 result.push_back(a);
             }
             return result;
@@ -257,7 +257,7 @@ namespace database
                 use(_title),
                 now;
 
-            insert.execute();
+            //insert.execute();
 
             Poco::Data::Statement select(session);
             select << "SELECT LAST_INSERT_ID()",

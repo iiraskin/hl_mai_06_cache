@@ -39,7 +39,7 @@ using Poco::Util::ServerApplication;
 
 #include "http_request_factory.h"
 #include "../config/config.h"
-
+#include "../database/author.h"
 
 
 class HTTPWebServer : public Poco::Util::ServerApplication
@@ -186,6 +186,8 @@ protected:
                 config().getString("HTTPWebServer.format",
                                    DateTimeFormat::SORTABLE_FORMAT));
             
+            //database::Author::warm_up_cache();
+
             ServerSocket svs(Poco::Net::SocketAddress("0.0.0.0", port));
             HTTPServer srv(new HTTPRequestFactory(format),
                            svs, new HTTPServerParams);

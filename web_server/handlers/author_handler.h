@@ -122,6 +122,7 @@ public:
                 try
                 {
                     database::Author result = database::Author::read_from_cache_by_id(id);
+                    //std::cout << "item from cache:" << id << std::endl;
                     Poco::JSON::Stringifier::stringify(result.toJSON(), ostr);
                     return;
                 }
