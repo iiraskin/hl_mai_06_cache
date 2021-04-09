@@ -44,6 +44,7 @@ using Poco::Util::OptionSet;
 using Poco::Util::ServerApplication;
 
 #include "../../database/author.h"
+#include <map>
 
 class AuthorHandler : public HTTPRequestHandler
 {
@@ -102,6 +103,8 @@ public:
     void handleRequest(HTTPServerRequest &request,
                        HTTPServerResponse &response)
     {
+        //static std::map<long,database::Author> my_cache;
+
         HTMLForm form(request, request.stream());
         response.setChunkedTransferEncoding(true);
         response.setContentType("application/json");
@@ -111,7 +114,14 @@ public:
         {
             long id = atol(form.get("id").c_str());
             bool no_cache = false;
-
+/*
+            if(my_cache.find(id)!=std::end(my_cache))
+                {
+                   
+                    Poco::JSON::Stringifier::stringify(my_cache[id].toJSON(), ostr);
+                    return;
+                }
+                */
             if (form.has("no_cache"))
                 no_cache = true;
             // read from cache
@@ -123,6 +133,7 @@ public:
                 {
                     database::Author result = database::Author::read_from_cache_by_id(id);
                     //std::cout << "item from cache:" << id << std::endl;
+                    //my_cache[id]=result;
                     Poco::JSON::Stringifier::stringify(result.toJSON(), ostr);
                     return;
                 }
@@ -134,6 +145,7 @@ public:
             try
             {
                 database::Author result = database::Author::read_by_id(id);
+                //my_cache[id]=result;
                 if (!no_cache)
                     result.save_to_cache();
                 //std::cout << "cache size:" << database::Author::size_of_cache() << std::endl;
