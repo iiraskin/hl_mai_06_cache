@@ -29,7 +29,7 @@ add_executable(${EXAMPLE_BINARY} main.cpp
                                  database/database.cpp
                                  database/cache.cpp
                                  #database/cache_thick.cpp
-                                 database/author.cpp)
+                                 database/person.cpp)
 
 
 target_include_directories(${EXAMPLE_BINARY} PRIVATE "${CMAKE_BINARY_DIR}")

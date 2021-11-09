@@ -39,7 +39,6 @@ using Poco::Util::ServerApplication;
 
 #include "http_request_factory.h"
 #include "../config/config.h"
-#include "../database/author.h"
 
 
 class HTTPWebServer : public Poco::Util::ServerApplication
@@ -108,19 +107,30 @@ protected:
                 .repeatable(false)
                 .callback(OptionCallback<HTTPWebServer>(this, &HTTPWebServer::handleInitDB)));
         options.addOption(
+            Option("fill_table", "ft", "fill in table of persons from specified json-file")
+                .required(false)
+                .repeatable(false)
+                .argument("value")
+                .callback(OptionCallback<HTTPWebServer>(this, &HTTPWebServer::handleFillTable)));
+        options.addOption(
             Option("cache_servers", "cs", "set ignite cache servers")
                 .required(false)
                 .repeatable(false)
                 .argument("value")
-                .callback(OptionCallback<HTTPWebServer>(this, &HTTPWebServer::handleCacheServers)));
-        
+                .callback(OptionCallback<HTTPWebServer>(this, &HTTPWebServer::handleCacheServers)));        
     }
 
     void handleInitDB([[maybe_unused]] const std::string &name,
                       [[maybe_unused]] const std::string &value)
     {
         std::cout << "init db" << std::endl;
-        database::Author::init();
+        database::Person::init();
+    }
+    void handleFillTable([[maybe_unused]] const std::string &name,
+                         [[maybe_unused]] const std::string &value)
+    {
+        std::cout << "fill in table file:" << value << std::endl;
+        database::Person::fillFromJSON(value);
     }
     void handleLogin([[maybe_unused]] const std::string &name,
                      [[maybe_unused]] const std::string &value)
@@ -186,8 +196,6 @@ protected:
                 config().getString("HTTPWebServer.format",
                                    DateTimeFormat::SORTABLE_FORMAT));
             
-            //database::Author::warm_up_cache();
-
             ServerSocket svs(Poco::Net::SocketAddress("0.0.0.0", port));
             HTTPServer srv(new HTTPRequestFactory(format),
                            svs, new HTTPServerParams);
